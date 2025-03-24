@@ -1,0 +1,13 @@
+{
+    "manifest_version": 3,
+    "name": "Disable Infobar",
+    "version": "1.0",
+    "description": "Hides the 'Chrome is being controlled by automated test software' infobar",
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content.js"],
+            "run_at": "document_start"
+        }
+    ]
+}
