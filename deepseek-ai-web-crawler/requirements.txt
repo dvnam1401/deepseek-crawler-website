@@ -1,6 +1,7 @@
-Crawl4AI==0.4.247
+beautifulsoup4==4.12.2
 python-dotenv==1.0.1
-pydantic==2.10.6
-playwright
-python-slugify
-undetected-chromedriver
+python-slugify==8.0.1
+requests==2.31.0
+selenium==4.15.2
+undetected-chromedriver==3.5.4
+pandas==2.1.3
