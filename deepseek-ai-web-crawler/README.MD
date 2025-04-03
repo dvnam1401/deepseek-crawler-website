@@ -1,81 +1,97 @@
-# Deep Seek Crawler
-- Link project: roject: https://github.com/bhancockio/deepseek-ai-web-crawler.git
-This project is a web crawler built with Python that extracts venue data (wedding reception venues) from a website using asynchronous programming with Crawl4AI. It utilizes a language model-based extraction strategy and saves the collected data to a CSV file.
+# Bachhoaxanh.com Web Crawler
 
-## Features
+Đây là bộ công cụ crawl dữ liệu danh mục và sản phẩm từ trang web bachhoaxanh.com. 
 
-- Asynchronous web crawling using [Crawl4AI](https://pypi.org/project/Crawl4AI/)
-- Data extraction powered by a language model (LLM)
-- CSV export of extracted venue information
-- Modular and easy-to-follow code structure ideal for beginners
+## Cài đặt
 
-## Project Structure
-```
-.
-├── main.py # Main entry point for the crawler
-├── config.py # Contains configuration constants (Base URL, CSS selectors, etc.)
-├── models
-│ └── venue.py # Defines the Venue data model using Pydantic
-├── utils
-│ ├── init.py # (Empty) Package marker for utils
-│ ├── data_utils.py # Utility functions for processing and saving data
-│ └── scraper_utils.py # Utility functions for configuring and running the crawler
-├── requirements.txt # Python package dependencies
-├── .gitignore # Git ignore file (e.g., excludes .env and CSV files)
-└── README.MD # This file
-```
-
-## Installation
-
-1. **Create and Activate a Conda Environment**
-
-   ```bash
-   conda create -n deep-seek-crawler python=3.12 -y
-   conda activate deep-seek-crawler
-   ```
-
-2. **Install Dependencies**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set Up Your Environment Variables**
-
-   Create a `.env` file in the root directory with content similar to:
-
-   ```env
-   GROQ_API_KEY=your_groq_api_key_here
-   ```
-
-   *(Note: The `.env` file is in your .gitignore, so it won’t be pushed to version control.)*
-
-## Usage
-
-To start the crawler, run:
+Đầu tiên, tạo môi trường ảo Python:
 
 ```bash
-python main.py
+# Tạo môi trường ảo
+python -m venv venv_crawler
+
+# Kích hoạt môi trường ảo (Windows)
+venv_crawler\Scripts\activate
+
+# Kích hoạt môi trường ảo (Linux/Mac)
+source venv_crawler/bin/activate
 ```
 
-The script will crawl the specified website, extract data page by page, and save the complete venues to a `complete_venues.csv` file in the project directory. Additionally, usage statistics for the LLM strategy will be displayed after crawling.
+Cài đặt các gói thư viện cần thiết:
 
-## Configuration
+```bash
+pip install playwright beautifulsoup4 requests
+python -m playwright install
+```
 
-The `config.py` file contains key constants used throughout the project:
+## Sử dụng
 
-- **BASE_URL**: The URL of the website from which to extract venue data.
-- **CSS_SELECTOR**: CSS selector string used to target venue content.
-- **REQUIRED_KEYS**: List of required fields to consider a venue complete.
+### 1. Crawl danh mục và danh mục con
 
-You can modify these values as needed.
+```bash
+python playwright_category_crawler.py
+```
 
-## Additional Notes
+Mặc định, kết quả sẽ được lưu vào `data/categories_playwright.json`.
 
-- **Logging:** The project currently uses print statements for status messages. For production or further development, consider integrating Python’s built-in `logging` module.
-- **Improvements:** The code is structured in multiple modules to maintain separation of concerns, making it easier for beginners to follow and extend the functionality.
-- **Dependencies:** Ensure that the package versions specified in `requirements.txt` are installed to avoid compatibility issues.
+Bạn có thể tùy chỉnh tên file đầu ra:
 
-## License
+```bash
+python playwright_category_crawler.py --output custom_filename.json
+```
 
-Include license information if applicable.
+### 2. Phân tích dữ liệu danh mục
+
+```bash
+python analyze_categories.py
+```
+
+Tùy chọn:
+- `--input` hoặc `-i`: Đường dẫn file JSON đầu vào (mặc định: `data/categories_playwright.json`)
+- `--export` hoặc `-e`: Xuất kết quả dưới dạng Markdown (nếu cung cấp đường dẫn file)
+- `--check-urls` hoặc `-c`: Kiểm tra xem các URL có hoạt động không
+- `--max-urls` hoặc `-m`: Số lượng URL kiểm tra tối đa (mặc định: 5)
+
+Ví dụ:
+```bash
+python analyze_categories.py --export categories.md --check-urls --max-urls 10
+```
+
+### 3. Kiểm tra tất cả URL
+
+```bash
+python check_all_urls.py 
+```
+
+Tùy chọn:
+- `--input` hoặc `-i`: Đường dẫn file JSON đầu vào (mặc định: `data/categories_playwright.json`)
+- `--workers` hoặc `-w`: Số lượng worker đồng thời (mặc định: 4)
+
+Ví dụ:
+```bash
+python check_all_urls.py --workers 2
+```
+
+## Cấu trúc dự án
+
+- `playwright_category_crawler.py`: Script chính để crawl danh mục từ bachhoaxanh.com
+- `config_playwright.py`: Cấu hình cho crawler (URL, selector, browser, etc.)
+- `analyze_categories.py`: Phân tích dữ liệu đã crawl được
+- `check_all_urls.py`: Kiểm tra xem tất cả URL có hoạt động không
+- `data/`: Thư mục chứa dữ liệu
+  - `categories_playwright.json`: Kết quả crawl danh mục
+  - `screenshots/`: Thư mục chứa ảnh chụp màn hình và HTML để debug
+
+## Tính năng
+
+- Crawl tất cả danh mục chính và danh mục con
+- Tạo URL slug chuẩn từ tên danh mục
+- Phân tích dữ liệu và hiển thị thống kê
+- Kiểm tra tính khả dụng của tất cả URL
+- Xuất dữ liệu dưới dạng Markdown
+
+## Lưu ý
+
+- Khi chạy crawler, hãy cẩn thận với tần suất yêu cầu để tránh bị chặn bởi website
+- Đã thêm User-Agent trong request để tránh lỗi 403 Forbidden
+- Crawler sử dụng Playwright nên phải cài đặt browser driver 

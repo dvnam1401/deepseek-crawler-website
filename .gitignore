@@ -1,4 +1,42 @@
+# Environment variables
 .env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+venv_crawler/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+
+# Data files
 *.csv
-__pycache__
-deepseek-ai-web-crawler/venv/
+*.json
+!url_check_results.json
+!package.json
+!package-lock.json
+
+# IDE
+.vscode/
+.idea/
+.cursor/
+
+# Node modules
+node_modules/
+
+# Browser specific
+.DS_Store
+Thumbs.db
+
+# Generated files
+playwright-report/
+test-results/
